@@ -75,32 +75,51 @@ class FinanceController extends Controller
         ->groupBy('product')
         ->get();
 
-        
+        $r_data = DB::table('returns')
+        ->select(DB::raw('SUM(returns.quantity) as r_quantity,group_concat(distinct(product)) as r_product'))
+        ->groupBy('product')
+        ->get();
 
         $product = array();
         $quantity = array();
         $quantity_p = array();
         $quantity_s = array();
+        $quantity_r = array();
+        for ($i=0; $i < count($p_data); $i++) { 
+            $temp_product = $p_data[$i]->p_product;
+            $temp_quantity = $p_data[$i]->p_quantity;
+            $temp_quantity_s = 0;
+            for ($j=0; $j < count($s_data); $j++) { 
+                if ($temp_product==$s_data[$j]->s_product) {
+                    $temp_quantity = $p_data[$i]->p_quantity - $s_data[$j]->s_quantity;
+                    $temp_quantity_s = $s_data[$j]->s_quantity;
+                }
+            }
+            $product[] = $temp_product;
+            $quantity[] = $temp_quantity;
+            $quantity_p[] = $p_data[$i]->p_quantity;
+            $quantity_s[] = $temp_quantity_s;
+        }
         for ($i=0; $i < count($p_data); $i++) { 
         	$temp_product = $p_data[$i]->p_product;
-        	$temp_quantity = $p_data[$i]->p_quantity;
+        	//$temp_quantity = $p_data[$i]->p_quantity;
         	$temp_quantity_s = 0;
-        	for ($j=0; $j < count($s_data); $j++) { 
-        		if ($temp_product==$s_data[$i]->s_product) {
-        			$temp_quantity = $p_data[$i]->p_quantity - $s_data[$i]->s_quantity;
-        			$temp_quantity_s = $s_data[$i]->s_quantity;
+        	for ($j=0; $j < count($r_data); $j++) { 
+        		if ($temp_product==$r_data[$j]->r_product) {
+        			$temp_quantity_s = $r_data[$j]->r_quantity;
         		}
-        	}
+        	}/*
         	$product[] = $temp_product;
         	$quantity[] = $temp_quantity;
-        	$quantity_p[] = $p_data[$i]->p_quantity;
-        	$quantity_s[] = $temp_quantity_s;
+        	$quantity_p[] = $p_data[$i]->p_quantity;*/
+        	$quantity_r[] = $temp_quantity_s;
         }
 
         $data['product'] 	= $product;
         $data['quantity'] 	= $quantity;
         $data['quantity_p'] = $quantity_p;
         $data['quantity_s'] = $quantity_s;
+        $data['quantity_r'] = $quantity_r;
         $data['date_from'] 	= '';
         $data['date_to'] 	= '';
     	  
@@ -123,6 +142,12 @@ class FinanceController extends Controller
         $dateTimeObj = DateTime::createFromFormat ( $format , $date_to);
         $date_to = $dateTimeObj->format($toFormat);
 
+        $r_data = DB::table('returns')
+                ->select(DB::raw('SUM(returns.quantity) as r_quantity,group_concat(distinct(product)) as r_product'))
+                ->where('created_at', '>=', $date_from)
+                ->where('created_at', '<=', $date_to)
+                ->groupBy('product')
+                ->get();
 
          $p_data = DB::table('purchases')
         ->select(DB::raw('SUM(purchases.quantity) as p_quantity,group_concat(distinct(product_name)) as p_product'))
@@ -142,6 +167,7 @@ class FinanceController extends Controller
         $quantity = array();
         $quantity_p = array();
         $quantity_s = array();
+        $quantity_r = array();
         for ($i=0; $i < count($p_data); $i++) { 
         	$temp_product = $p_data[$i]->p_product;
         	$temp_quantity = $p_data[$i]->p_quantity;
@@ -157,11 +183,27 @@ class FinanceController extends Controller
         	$quantity_p[] = $p_data[$i]->p_quantity;
         	$quantity_s[] = $temp_quantity_s;
         }
+        for ($i=0; $i < count($p_data); $i++) { 
+            $temp_product = $p_data[$i]->p_product;
+            //$temp_quantity = $p_data[$i]->p_quantity;
+            $temp_quantity_s = 0;
+            for ($j=0; $j < count($r_data); $j++) { 
+                if ($temp_product==$r_data[$j]->r_product) {
+                    $temp_quantity_s = $r_data[$j]->r_quantity;
+                }
+            }/*
+            $product[] = $temp_product;
+            $quantity[] = $temp_quantity;
+            $quantity_p[] = $p_data[$i]->p_quantity;*/
+            $quantity_r[] = $temp_quantity_s;
+        }
+
 
         $data['product'] 	= $product;
         $data['quantity'] 	= $quantity;
         $data['quantity_p'] = $quantity_p;
         $data['quantity_s'] = $quantity_s;
+        $data['quantity_r'] = $quantity_r;
         $data['date_from'] 	= $date_from;
         $data['date_to'] 	= $date_to;
     	  

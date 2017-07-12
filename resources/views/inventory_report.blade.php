@@ -44,6 +44,7 @@
                                 <th>Product</th>
                                 <th>Purchase Quantity</th>
                                 <th>Sale Quantity</th>
+                                <th>Return Quantity</th>
                                 <th>Stock</th>
                             </tr>
                         </thead>
@@ -54,6 +55,7 @@
                                 <td>{{$product[$i]}}</td>
                                 <td>{{$quantity_p[$i]}}</td>
                                 <td>{{$quantity_s[$i]}}</td>
+                                <td>{{$quantity_r[$i]}}</td>
                                 <td>{{$quantity[$i]}}</td>
                             </tr>
                             @endfor
@@ -66,8 +68,9 @@
 </div>
 
 @endsection
-<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
 <script src="{{asset('assets/datepicker/js/bootstrap-datepicker.min.js')}}"></script>
 
