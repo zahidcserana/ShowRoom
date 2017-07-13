@@ -95,24 +95,22 @@ class FinanceController extends Controller
                     $temp_quantity_s = $s_data[$j]->s_quantity;
                 }
             }
-            $product[] = $temp_product;
+           /* $product[] = $temp_product;
             $quantity[] = $temp_quantity;
             $quantity_p[] = $p_data[$i]->p_quantity;
-            $quantity_s[] = $temp_quantity_s;
-        }
-        for ($i=0; $i < count($p_data); $i++) { 
-        	$temp_product = $p_data[$i]->p_product;
-        	//$temp_quantity = $p_data[$i]->p_quantity;
-        	$temp_quantity_s = 0;
+            $quantity_s[] = $temp_quantity_s;*/
+      
+        	$temp_quantity_r = 0;
         	for ($j=0; $j < count($r_data); $j++) { 
         		if ($temp_product==$r_data[$j]->r_product) {
-        			$temp_quantity_s = $r_data[$j]->r_quantity;
+        			$temp_quantity_r = $r_data[$j]->r_quantity;
         		}
-        	}/*
+        	}
         	$product[] = $temp_product;
-        	$quantity[] = $temp_quantity;
-        	$quantity_p[] = $p_data[$i]->p_quantity;*/
-        	$quantity_r[] = $temp_quantity_s;
+        	$quantity[] = $temp_quantity + $temp_quantity_r;
+        	$quantity_p[] = $p_data[$i]->p_quantity;
+            $quantity_s[] = $temp_quantity_s;
+        	$quantity_r[] = $temp_quantity_r;
         }
 
         $data['product'] 	= $product;
@@ -178,24 +176,18 @@ class FinanceController extends Controller
         			$temp_quantity_s = $s_data[$i]->s_quantity;
         		}
         	}
-        	$product[] = $temp_product;
-        	$quantity[] = $temp_quantity;
-        	$quantity_p[] = $p_data[$i]->p_quantity;
-        	$quantity_s[] = $temp_quantity_s;
-        }
-        for ($i=0; $i < count($p_data); $i++) { 
-            $temp_product = $p_data[$i]->p_product;
-            //$temp_quantity = $p_data[$i]->p_quantity;
-            $temp_quantity_s = 0;
+
+        	$temp_quantity_r = 0;
             for ($j=0; $j < count($r_data); $j++) { 
                 if ($temp_product==$r_data[$j]->r_product) {
-                    $temp_quantity_s = $r_data[$j]->r_quantity;
+                    $temp_quantity_r = $r_data[$j]->r_quantity;
                 }
-            }/*
+            }
             $product[] = $temp_product;
-            $quantity[] = $temp_quantity;
-            $quantity_p[] = $p_data[$i]->p_quantity;*/
-            $quantity_r[] = $temp_quantity_s;
+            $quantity[] = $temp_quantity + $temp_quantity_r;
+            $quantity_p[] = $p_data[$i]->p_quantity;
+            $quantity_s[] = $temp_quantity_s;
+            $quantity_r[] = $temp_quantity_r;
         }
 
 
@@ -225,6 +217,11 @@ class FinanceController extends Controller
         ->groupBy('product')
         ->get();
 
+        $r_data = DB::table('returns')
+        ->select(DB::raw('SUM(returns.amount) as r_amount,group_concat(distinct(product)) as r_product'))
+        ->groupBy('product')
+        ->get();
+
         
 
         $product = array();
@@ -238,21 +235,37 @@ class FinanceController extends Controller
         	$temp_amount_s = 0;
         	for ($j=0; $j < count($s_data); $j++) { 
         		if ($temp_product==$s_data[$i]->s_product) {
-        			$temp_amount = $s_data[$i]->s_amount - $p_data[$i]->p_amount;
+                    //$temp_amount = $s_data[$i]->s_amount - $p_data[$i]->p_amount;
+        			$temp_amount = $s_data[$i]->s_amount;
         			$temp_amount_s = $s_data[$i]->s_amount;
         		}
         	}
-        	$product[] = $temp_product;
-        	$amount[] = $temp_amount;
+        	/*$product[] = $temp_product;
+        	//$amount[] = $temp_amount;
         	$total_difference+= $temp_amount;
         	$amount_p[] = $p_data[$i]->p_amount;
-        	$amount_s[] = $temp_amount_s;
+        	$amount_s[] = $temp_amount_s;*/
+
+            $temp_amount_r = 0;
+            for ($j=0; $j < count($r_data); $j++) { 
+                if ($temp_product==$r_data[$j]->r_product) {
+                    $temp_amount_r = $r_data[$j]->r_amount;
+                }
+            }
+            $product[] = $temp_product;
+            $difference = $temp_amount - $temp_amount_r;
+            $total_difference+= $difference;
+            $amount[] = $difference;
+            $amount_p[] = $p_data[$i]->p_amount;
+            $amount_s[] = $temp_amount_s;
+            $amount_r[] = $temp_amount_r;
         }
 
         $data['product'] 	= $product;
         $data['amount'] 	= $amount;
         $data['amount_p'] = $amount_p;
         $data['amount_s'] = $amount_s;
+        $data['amount_r'] = $amount_r;
         $data['total_difference'] = $total_difference;
         $data['date_from'] 	= '';
         $data['date_to'] 	= '';

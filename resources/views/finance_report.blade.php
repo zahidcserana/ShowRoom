@@ -15,7 +15,7 @@
                             <label class="col-sm-2 col-form-label"> Date From</label>
                             <div class="col-sm-4">
                                 <div class="input-group date" data-provide="datepicker">
-                                    <input type="text" name="date_from" class="form-control" value="{{$date_from}}">
+                                    <input type="text" name="date_from" class="form-control" value="{{$date_from}}" required>
                                     <div class="input-group-addon">
                                         <span class="glyphicon glyphicon-th"></span>
                                     </div>
@@ -24,7 +24,7 @@
                             <label class="col-sm-2 col-form-label"> Date To</label>
                             <div class="col-sm-4">
                                 <div class="input-group date" data-provide="datepicker">
-                                    <input type="text" name="date_to" class="form-control" value="{{$date_to}}">
+                                    <input type="text" name="date_to" class="form-control" value="{{$date_to}}" required>
                                     <div class="input-group-addon">
                                         <span class="glyphicon glyphicon-th"></span>
                                     </div>
@@ -44,6 +44,7 @@
                                 <th>Product</th>
                                 <th>Purchase Amount</th>
                                 <th>Sale Amount</th>
+                                <th>Return Amount</th>
                                 <th>Difference</th>
                             </tr>
                         </thead>
@@ -54,19 +55,20 @@
                                 <td>{{$product[$i]}}</td>
                                 <td>{{$amount_p[$i]}}</td>
                                 <td>{{$amount_s[$i]}}</td>
+                                <td>{{$amount_r[$i]}}</td>
                                 <td>{{$amount[$i]}}</td>
                             </tr>
                             @endfor
                             <tr>
-                                <td colspan="4">Total Difference</td>
+                                <td colspan="5">Total Difference</td>
                                 <td>{{$total_difference}}</td>
                             </tr>
                             <tr>
-                                <td colspan="4">Other Expences</td>
+                                <td colspan="5">Other Expences</td>
                                 <td>{{$used}}</td>
                             </tr>
                             <tr>
-                                <td colspan="4">Net Differences</td>
+                                <td colspan="5">Net Differences</td>
                                 <td>{{$net_difference}}</td>
                             </tr>
                         </tbody>

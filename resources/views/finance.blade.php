@@ -14,12 +14,12 @@
                             <div class="form-group row">
                                 <label class="col-sm-2 col-form-label">Exp: Vouchar No</label>
                                 <div class="col-sm-4">
-                                <input type="text" name="vouchar_no" class="form-control" placeholder="Enter Vouchar No">
+                                <input type="text" name="vouchar_no" class="form-control" placeholder="Enter Vouchar No" required>
                                 </div>
                                 <label class="col-sm-2 col-form-label"> Exp: Date</label>
                                 <div class="col-sm-4">
                                 <div class="input-group date" data-provide="datepicker">
-                                    <input type="text" name="created_at" class="form-control">
+                                    <input type="text" name="created_at" class="form-control" required>
                                     <div class="input-group-addon">
                                         <span class="glyphicon glyphicon-th"></span>
                                     </div>
@@ -30,31 +30,31 @@
                                 <div class="form-group row">
                                     <label class="col-sm-2 col-form-label">Person Name</label>
                                     <div class="col-sm-10">
-                                    <input type="text" name="person" class="form-control" placeholder="Person Name">
+                                    <input type="text" name="person" class="form-control" placeholder="Person Name" required>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-2 col-form-label">Purpose</label>
                                     <div class="col-sm-10">
-                                    <input type="text" name="purpose" class="form-control" placeholder="Purpose">
+                                    <input type="text" name="purpose" class="form-control" placeholder="Purpose" required>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-2 col-form-label">Amount Issue</label>
                                     <div class="col-sm-10">
-                                    <input type="text" name="issue" id="issue" class="form-control" placeholder="Amount Issue">
+                                    <input type="text" name="issue" id="issue" class="form-control" placeholder="Amount Issue" required>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-2 col-form-label">Amount Used</label>
                                     <div class="col-sm-10">
-                                    <input type="text" name="used" id="used" class="form-control" placeholder="Amount Used">
+                                    <input type="text" name="used" id="used" class="form-control" placeholder="Amount Used" required>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-2 col-form-label"> Deposited</label>
                                     <div class="col-sm-10">
-                                    <input type="text" name="deposited" id="deposited" class="form-control" placeholder="Deposited">
+                                    <input type="text" name="deposited" id="deposited" class="form-control" placeholder="Deposited" required>
                                     </div>
                                 </div>
                             </div>

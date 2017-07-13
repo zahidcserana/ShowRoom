@@ -22,7 +22,7 @@ Route::get('/purchase', 'PurchaseController@index')->name('purchase');
 Route::post('/purchase', 'PurchaseController@Purchase')->name('purchase');
 Route::get('/sale', 'SalesController@index')->name('sale');
 Route::post('/sale', 'SalesController@sale')->name('sale');
-Route::get('/return', 'SalesController@Return')->name('return');
+Route::get('/return', 'SalesController@ReturnPrd')->name('return');
 Route::post('/return', 'SalesController@ReturnProduct')->name('return');
 Route::get('/finance', 'FinanceController@index')->name('finance');
 Route::post('/finance', 'FinanceController@Finance')->name('finance');

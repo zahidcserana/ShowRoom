@@ -22,8 +22,14 @@ class SalesController extends Controller
 
         if (isset($_POST['search'])) {
             $vouchar_no = $_POST['voucher'];
-            $total_amount = DB::table('sales')->where('vouchar_no',$vouchar_no)->first()->total;
-
+            $result = DB::table('sales')->where('vouchar_no',$vouchar_no)->first();
+            if ($result) {
+                $total_amount = $result->total;
+            }
+            else
+            {
+                 return redirect('sale')->with('status', 'Invalid Vouchar No!');
+            }
             $data['voucher'] = $vouchar_no;
             $data['total_amount'] = $total_amount;
 
@@ -37,6 +43,7 @@ class SalesController extends Controller
         $amount = $request->input('amount');
         $unit_price = $request->input('unit_price');
         $amount_t = $request->input('total');
+        
 
         $fromFormat = 'm/j/Y';
         $toFormat = 'Y-m-d';
@@ -63,11 +70,14 @@ class SalesController extends Controller
             DB::table('sales')->insertGetId($input);
         }
 
-        
-        return redirect()->route('sale');
+        $data['voucher'] = $vouchar_no;
+        $data['total_amount'] = $amount_t;
+
+        return view('sale',$data);
+        //return redirect()->route('sale');
     } 
     /// Return
-    public function Return()
+    public function ReturnPrd()
     {
     	$voucher = '';
     	$total_amount = '';

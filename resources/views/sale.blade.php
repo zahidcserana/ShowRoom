@@ -24,12 +24,12 @@
                             <div class="form-group row">
                                 <label class="col-sm-2 col-form-label"> Vouchar No</label>
                                 <div class="col-sm-4">
-                                <input type="text" name="vouchar_no" class="form-control" placeholder="Enter Vouchar No">
+                                <input type="text" name="vouchar_no" class="form-control" placeholder="Enter Vouchar No" required required>
                                 </div>
                                 <label class="col-sm-2 col-form-label"> Purchase Date</label>
                                 <div class="col-sm-4">
                                 <div class="input-group date" data-provide="datepicker">
-                                    <input type="text" name="created_at" class="form-control">
+                                    <input type="text" name="created_at" class="form-control" required required>
                                     <div class="input-group-addon">
                                         <span class="glyphicon glyphicon-th"></span>
                                     </div>
@@ -50,17 +50,17 @@
                                 <tbody id="tr_div">
                                   <tr>
                                       <td>1</td>
-                                      <td><input type="text" name="product[]" class="form-control"></td>
-                                      <td><input type="text" name="unit_price[]" id="unit_price" class="form-control"></td>
-                                      <td><input type="text" name="quantity[]" id="quantity" class="form-control"></td>
-                                      <td><input type="text" name="amount[]" id="amount" class="form-control"></td>
+                                      <td><input type="text" name="product[]" class="form-control" required></td>
+                                      <td><input type="text" name="unit_price[]" id="unit_price" class="form-control" required></td>
+                                      <td><input type="text" name="quantity[]" id="quantity" class="form-control" required></td>
+                                      <td><input type="text" name="amount[]" id="amount" class="form-control" required></td>
                                   </tr>
                                 </tbody>
                               </table>
                             </div>
                             <div class="form-group row">
                                 <div align="center" class="offset-sm-2 col-sm-10">
-                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                    <button id="submit" style="display: none;" type="submit" class="btn btn-primary">Submit</button>
                                     <button id="calculation" class="btn btn-primary">Calculate</button>
                                 </div>
                             </div>
@@ -75,12 +75,17 @@
         </div>
     </div>
     <div>
+    @if (session('status'))
+        <div style="width: 20%;" class="alert alert-warning">
+            {{ session('status') }}
+        </div>
+    @endif
         <form method="post" action="{{route('sale')}}" role="form">
             {{ csrf_field() }}
              <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Voucher No</label>
                 <div class="col-sm-4">
-                <input type="text" name="voucher" id="voucher" class="form-control" value="{{$voucher}}">
+                <input type="text" name="voucher" id="voucher" class="form-control" value="{{$voucher}}" required>
                 </div>
             </div>
             <div class="form-group row">
@@ -154,6 +159,7 @@
         $("#calculation").hide();
         $("#addMore").hide();
         $("#removeDiv").hide();
+        $("#submit").show();
     });
 
 });

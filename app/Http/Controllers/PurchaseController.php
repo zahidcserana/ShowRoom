@@ -22,10 +22,16 @@ class PurchaseController extends Controller
 
     	if (isset($_POST['search'])) {
     		$vouchar_no = $_POST['voucher'];
-    		$total_amount = DB::table('purchases')->where('vouchar_no',$vouchar_no)->first()->amount_t;
-
+    		$result = DB::table('purchases')->where('vouchar_no',$vouchar_no)->first();
+            if ($result) {
+                $total_amount = $result->amount_t;
+            }
+             else
+            {
+                 return redirect('purchase')->with('status', 'Invalid Vouchar No!');
+            }
 	    	$data['voucher'] = $vouchar_no;
-	    	$data['total_amount'] = $total_amount;
+            $data['total_amount'] = $total_amount;
 
 	    	return view('purchase_form',$data);
     	}
@@ -47,7 +53,8 @@ class PurchaseController extends Controller
         $created_at = $dateTimeObj->format($toFormat);
         $amount_t = 0;
         for ($i=0; $i <count($product_name) ; $i++) { 
-    		$amount_t+= ($quantity[$i]*$unit_price[$i])+$other_expense[$i];
+            //$amount_t+= ($quantity[$i]*$unit_price[$i])+$other_expense[$i];
+    		$amount_t+= $amount[$i]+$other_expense[$i];
     	}
     	for ($i=0; $i <count($product_name) ; $i++) { 
 
@@ -68,7 +75,12 @@ class PurchaseController extends Controller
 			DB::table('purchases')->insertGetId($input);
     	}
 
+        $voucher = $vouchar_no;
+        $total_amount = $amount_t;
+        $data['voucher'] = $voucher;
+        $data['total_amount'] = $total_amount;
+        return view('purchase_form',$data);
     	
-    	return redirect()->route('purchase');
+    	//return redirect()->route('purchase');
     }
 }

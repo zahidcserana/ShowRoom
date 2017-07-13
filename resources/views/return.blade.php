@@ -15,7 +15,7 @@
                                 <label class="col-sm-2 col-form-label"> Return Date</label>
                                 <div class="col-sm-4">
                                 <div class="input-group date" data-provide="datepicker">
-                                    <input type="text" name="created_at" class="form-control">
+                                    <input type="text" name="created_at" class="form-control" required>
                                     <div class="input-group-addon">
                                         <span class="glyphicon glyphicon-th"></span>
                                     </div>
@@ -26,25 +26,25 @@
                                 <div class="form-group row">
                                     <label class="col-sm-2 col-form-label">Product Name</label>
                                     <div class="col-sm-10">
-                                    <input type="text" name="product" class="form-control" placeholder="Product Name">
+                                    <input type="text" name="product" class="form-control" placeholder="Product Name" required>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-2 col-form-label"> Quantity</label>
                                     <div class="col-sm-10">
-                                    <input type="text" name="quantity" id="quantity" class="form-control" placeholder="Quantity">
+                                    <input type="text" name="quantity" id="quantity" class="form-control" placeholder="Quantity" required>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-2 col-form-label">Amount</label>
                                     <div class="col-sm-10">
-                                    <input type="text" name="amount" id="amount" class="form-control" placeholder="Amount">
+                                    <input type="text" name="amount" id="amount" class="form-control" placeholder="Amount" required>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-2 col-form-label">Unit Price</label>
                                     <div class="col-sm-10">
-                                    <input type="text" name="unit_price" id="unit_price" class="form-control" placeholder="Unit Price">
+                                    <input type="text" name="unit_price" id="unit_price" class="form-control" placeholder="Unit Price" required>
                                     </div>
                                 </div>
                             </div>
