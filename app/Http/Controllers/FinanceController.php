@@ -79,7 +79,7 @@ class FinanceController extends Controller
         ->select(DB::raw('SUM(returns.quantity) as r_quantity,group_concat(distinct(product)) as r_product'))
         ->groupBy('product')
         ->get();
-
+       
         $product = array();
         $quantity = array();
         $quantity_p = array();
@@ -105,12 +105,14 @@ class FinanceController extends Controller
         		if ($temp_product==$r_data[$j]->r_product) {
         			$temp_quantity_r = $r_data[$j]->r_quantity;
         		}
+
         	}
         	$product[] = $temp_product;
         	$quantity[] = $temp_quantity + $temp_quantity_r;
         	$quantity_p[] = $p_data[$i]->p_quantity;
             $quantity_s[] = $temp_quantity_s;
         	$quantity_r[] = $temp_quantity_r;
+
         }
 
         $data['product'] 	= $product;
@@ -207,7 +209,7 @@ class FinanceController extends Controller
 			        ->select(DB::raw('SUM(finances.used) as used'))
 			        ->first();
 
-         $p_data = DB::table('purchases')
+        $p_data = DB::table('purchases')
         ->select(DB::raw('SUM(purchases.amount) as p_amount,group_concat(distinct(product_name)) as p_product'))
         ->groupBy('product_name')
         ->get();
@@ -222,12 +224,11 @@ class FinanceController extends Controller
         ->groupBy('product')
         ->get();
 
-        
-
         $product = array();
         $amount = array();
         $amount_p = array();
         $amount_s = array();
+        $amount_r = array();
         $total_difference = 0;
         for ($i=0; $i < count($p_data); $i++) { 
         	$temp_product = $p_data[$i]->p_product;
@@ -274,7 +275,108 @@ class FinanceController extends Controller
     	  
     	return view('finance_report',$data);
     } 
+
     public function FinanceSearch(Request $request)
+    {
+        $date_from = $request->input('date_from');
+        $date_to = $request->input('date_to');
+
+        if ($date_from==NULL) {
+            $date_from = '00';
+        }
+        if ($date_to==NULL) {
+            $date_to = '00';
+        }
+
+        $fromFormat = 'm/j/Y';
+        $toFormat = 'Y-m-d';
+        $format = $fromFormat;
+        $dateTimeObj = DateTime::createFromFormat ( $format , $date_from);
+        $date_from = $dateTimeObj->format($toFormat);
+
+        $fromFormat = 'm/j/Y';
+        $toFormat = 'Y-m-d';
+        $format = $fromFormat;
+        $dateTimeObj = DateTime::createFromFormat ( $format , $date_to);
+        $date_to = $dateTimeObj->format($toFormat);
+
+        $finances = DB::table('finances')
+                    ->select(DB::raw('SUM(finances.used) as used'))
+                    ->first();
+
+        $p_data = DB::table('purchases')
+        ->select(DB::raw('SUM(purchases.amount) as p_amount,group_concat(distinct(product_name)) as p_product'))
+        ->where('created_at', '>=', $date_from)
+        ->where('created_at', '<=', $date_to)
+        ->groupBy('product_name')
+        ->get();
+
+        $s_data = DB::table('sales')
+        ->select(DB::raw('SUM(sales.amount) as s_amount,group_concat(distinct(product)) as s_product'))
+        ->where('created_at', '>=', $date_from)
+        ->where('created_at', '<=', $date_to)
+        ->groupBy('product')
+        ->get();
+
+        $r_data = DB::table('returns')
+        ->select(DB::raw('SUM(returns.amount) as r_amount,group_concat(distinct(product)) as r_product'))
+        ->where('created_at', '>=', $date_from)
+        ->where('created_at', '<=', $date_to)
+        ->groupBy('product')
+        ->get();
+
+        $product = array();
+        $amount = array();
+        $amount_p = array();
+        $amount_s = array();
+        $amount_r = array();
+        $total_difference = 0;
+        for ($i=0; $i < count($p_data); $i++) { 
+            $temp_product = $p_data[$i]->p_product;
+            $temp_amount = $p_data[$i]->p_amount;
+            $temp_amount_s = 0;
+            for ($j=0; $j < count($s_data); $j++) { 
+                if ($temp_product==$s_data[$i]->s_product) {
+                    //$temp_amount = $s_data[$i]->s_amount - $p_data[$i]->p_amount;
+                    $temp_amount = $s_data[$i]->s_amount;
+                    $temp_amount_s = $s_data[$i]->s_amount;
+                }
+            }
+            /*$product[] = $temp_product;
+            //$amount[] = $temp_amount;
+            $total_difference+= $temp_amount;
+            $amount_p[] = $p_data[$i]->p_amount;
+            $amount_s[] = $temp_amount_s;*/
+
+            $temp_amount_r = 0;
+            for ($j=0; $j < count($r_data); $j++) { 
+                if ($temp_product==$r_data[$j]->r_product) {
+                    $temp_amount_r = $r_data[$j]->r_amount;
+                }
+            }
+            $product[] = $temp_product;
+            $difference = $temp_amount - $temp_amount_r;
+            $total_difference+= $difference;
+            $amount[] = $difference;
+            $amount_p[] = $p_data[$i]->p_amount;
+            $amount_s[] = $temp_amount_s;
+            $amount_r[] = $temp_amount_r;
+        }
+
+        $data['product']    = $product;
+        $data['amount']     = $amount;
+        $data['amount_p'] = $amount_p;
+        $data['amount_s'] = $amount_s;
+        $data['amount_r'] = $amount_r;
+        $data['total_difference'] = $total_difference;
+        $data['date_from']  = '';
+        $data['date_to']    = '';
+        $data['used']   = $finances->used;
+        $data['net_difference'] = $total_difference - $finances->used;
+          
+        return view('finance_report',$data);
+    }
+   /* public function FinanceSearch(Request $request)
     {
     	$date_from = $request->input('date_from');
     	$date_to = $request->input('date_to');
@@ -299,7 +401,7 @@ class FinanceController extends Controller
         $date_to = $dateTimeObj->format($toFormat);
 
 
-         $finances = DB::table('finances')
+        $finances = DB::table('finances')
 			        ->select(DB::raw('SUM(finances.used) as used'))
 			        ->where('created_at', '>=', $date_from)
 			        ->where('created_at', '<=', $date_to)
@@ -320,10 +422,18 @@ class FinanceController extends Controller
         ->groupBy('product')
         ->get();
 
+        $r_data = DB::table('returns')
+        ->select(DB::raw('SUM(returns.amount) as r_amount,group_concat(distinct(product)) as r_product'))
+        ->where('created_at', '>=', $date_from)
+        ->where('created_at', '<=', $date_to)
+        ->groupBy('product')
+        ->get();
+
         $product = array();
         $amount = array();
         $amount_p = array();
         $amount_s = array();
+        $amount_r = array();
         $total_difference = 0;
         for ($i=0; $i < count($p_data); $i++) { 
         	$temp_product = $p_data[$i]->p_product;
@@ -335,17 +445,27 @@ class FinanceController extends Controller
         			$temp_amount_s = $s_data[$i]->s_amount;
         		}
         	}
+
+            $temp_amount_r = 0;
+            for ($j=0; $j < count($r_data); $j++) { 
+                if ($temp_product==$r_data[$j]->r_product) {
+                    $temp_amount_r = $r_data[$j]->r_amount;
+                }
+            }
+
         	$product[] = $temp_product;
         	$amount[] = $temp_amount;
         	$total_difference+= $temp_amount;
         	$amount_p[] = $p_data[$i]->p_amount;
         	$amount_s[] = $temp_amount_s;
+            $amount_r[] = $temp_amount_r;
         }
 
         $data['product'] 	= $product;
         $data['amount'] 	= $amount;
         $data['amount_p'] = $amount_p;
         $data['amount_s'] = $amount_s;
+        $data['amount_r'] = $amount_r;
         $data['total_difference'] = $total_difference;
         $data['date_from'] 	= $date_from;
         $data['date_to'] 	= $date_to;
@@ -353,5 +473,5 @@ class FinanceController extends Controller
         $data['net_difference'] = $total_difference - $finances->used;
     	  
     	return view('finance_report',$data);
-    }
+    }*/
 }

@@ -7,16 +7,29 @@ use DB;
 
 class PurchaseController extends Controller
 {
+    public function Purchases()
+    {
+        $list = DB::table('purchases')->get();
+        $voucher = '';
+        $total_amount = '';
+        $data['voucher'] = $voucher;
+        $data['total_amount'] = $total_amount;
+        $data['list'] = $list;
+        return view('purchases',$data);
+    }
     public function Index()
     {
+        $list = DB::table('categories')->get();
     	$voucher = '';
     	$total_amount = '';
     	$data['voucher'] = $voucher;
-    	$data['total_amount'] = $total_amount;
+        $data['total_amount'] = $total_amount;
+    	$data['list'] = $list;
     	return view('purchase_form',$data);
     }
     public function Purchase(Request $request)
     {
+        $list = DB::table('categories')->get();
     	$vouchar_no = '';
     	$total_amount = '';
 
@@ -32,11 +45,17 @@ class PurchaseController extends Controller
             }
 	    	$data['voucher'] = $vouchar_no;
             $data['total_amount'] = $total_amount;
+            $data['list'] = $list;
 
 	    	return view('purchase_form',$data);
     	}
     	$product_name = $request->input('product_name');
     	$vouchar_no = $request->input('vouchar_no');
+
+        $result = DB::table('purchases')->where('vouchar_no',$vouchar_no)->first();
+        if ($result) {
+            return redirect('purchase')->with('status', 'Duplicate Vouchar No!');
+        }
     	$created_at = $request->input('created_at');
     	$brand = $request->input('brand');
     	$purchase_from = $request->input('purchase_from');
@@ -79,6 +98,9 @@ class PurchaseController extends Controller
         $total_amount = $amount_t;
         $data['voucher'] = $voucher;
         $data['total_amount'] = $total_amount;
+        $data['msg'] = 'Successfully Added';
+        $data['list'] = $list;
+        
         return view('purchase_form',$data);
     	
     	//return redirect()->route('purchase');

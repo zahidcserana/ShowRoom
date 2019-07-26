@@ -1,19 +1,19 @@
-@extends('layouts.app')
+@extends('layouts.master')
 
 @section('content')
 <div class="container">
     <div class="row">
-        <div class="col-md-8 col-md-offset-2">
+        <div class="col-md-12">
             <div class="panel panel-default">
-                <div class="panel-heading">Purchase Information</div>
+                <div class="panel-heading">Finance Information</div>
 
                 <div class="panel-body">
                    <div class="control-group">
                      <form method="post" action="{{route('finance_report')}}" role="form">
                                             {{ csrf_field() }}
                         <div class="form-group row">
-                            <label class="col-sm-2 col-form-label"> Date From</label>
-                            <div class="col-sm-4">
+                            <label class="col-sm-1 col-form-label"> Date From</label>
+                            <div class="col-sm-3">
                                 <div class="input-group date" data-provide="datepicker">
                                     <input type="text" name="date_from" class="form-control" value="{{$date_from}}" required>
                                     <div class="input-group-addon">
@@ -21,8 +21,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <label class="col-sm-2 col-form-label"> Date To</label>
-                            <div class="col-sm-4">
+                            <label class="col-sm-1 col-form-label"> Date To</label>
+                            <div class="col-sm-3">
                                 <div class="input-group date" data-provide="datepicker">
                                     <input type="text" name="date_to" class="form-control" value="{{$date_to}}" required>
                                     <div class="input-group-addon">
@@ -30,9 +30,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group row">
-                            <div align="center" class="offset-sm-2 col-sm-10">
+                            <div class="col-sm-4">
                                 <button type="submit" class="btn btn-primary">Search</button>
                             </div>
                         </div>
@@ -51,7 +49,7 @@
                         <tbody>
                             @for($i=0; $i<count($product); $i++)
                             <tr class="odd gradeX">
-                                <td>{{$i}}</td>
+                                <td>{{$i+1}}</td>
                                 <td>{{$product[$i]}}</td>
                                 <td>{{$amount_p[$i]}}</td>
                                 <td>{{$amount_s[$i]}}</td>
@@ -80,10 +78,13 @@
 </div>
 
 @endsection
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
 
+@section('js_content')
+
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> -->
+<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
 <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
 <script src="{{asset('assets/datepicker/js/bootstrap-datepicker.min.js')}}"></script>
 
 <!-- <link rel="stylesheet" href="{{asset('assets/datepicker/css/bootstrap-datepicker.min.css')}}" /> -->
+@endsection

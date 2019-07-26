@@ -1,12 +1,21 @@
-@extends('layouts.app')
+@extends('layouts.master')
 
 @section('content')
 <div class="container">
     <div class="row">
-        <div class="col-md-8 col-md-offset-2">
+        <div class="col-md-10 col-md-offset-1">
             <div class="panel panel-default">
                 <div class="panel-heading">Purchase Information</div>
-
+                @if (session('status'))
+                    <div style="text-align: center;" class="alert alert-warning">
+                        {{ session('status') }}
+                    </div>
+                @endif
+                @if (isset($msg))
+                    <div style="text-align: center;" class="alert alert-warning">
+                        {{ $msg }}
+                    </div>
+                @endif
                 <div class="panel-body">
                    <div class="control-group">
                         <form method="post" action="{{route('purchase')}}" role="form">
@@ -28,21 +37,33 @@
                             </div>
                             <div id="purchase_div">
                                 <div class="form-group row">
-                                    <label class="col-sm-2 col-form-label">Product Name</label>
-                                    <div class="col-sm-10">
-                                    <input type="text" name="product_name[]" class="form-control" placeholder="Product Name" required  >
+                                    <label class="col-md-2">Category</label>
+                                    <div class="col-md-4">
+                                        <select name="category" onchange="getItems(this.value,0)" id="category" class="form-control">
+                                          <option disabled selected>Select</option>
+                                          @foreach($list as $item)
+                                            <option value="{{$item->id}}"> {{$item->name}} </option>
+                                          @endforeach
+                                        </select>
+                                    </div>
+                                    <label class="col-md-2 col-sm-2 col-form-label">Product Name</label>
+                                    <div class="col-md-4">
+                                    <!-- <input type="text" name="product_name[]" class="form-control" placeholder="Product Name" required  > -->
+                                    <select id="product_name_0" name="product_name[]" class="form-control">
+                                        <option>Select One </option>
+                                    </select>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-2 col-form-label">Brand</label>
                                     <div class="col-sm-10">
-                                    <input type="text" name="brand[]" class="form-control" placeholder="Brand" required  >
+                                    <input type="text" name="brand[]" class="form-control" placeholder="Brand"   >
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-2 col-form-label">Purchase From</label>
                                     <div class="col-sm-10">
-                                    <input type="text" name="purchase_from[]" class="form-control" placeholder="Purchase From" required  >
+                                    <input type="text" name="purchase_from[]" class="form-control" placeholder="Purchase From"   >
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -72,7 +93,7 @@
                                  <div class="form-group row">
                                     <label class="col-sm-2 col-form-label">Purchase By</label>
                                     <div class="col-sm-10">
-                                    <input type="text" name="purchase_by[]" class="form-control" placeholder="Purchase By" required >
+                                    <input type="text" name="purchase_by[]" class="form-control" placeholder="Purchase By"  >
                                     </div>
                                 </div>
                             </div>
@@ -85,18 +106,13 @@
                         <!-- <a href="{{route('purchase')}}"><button class="btn btn-default">Cancel</button></a> -->
                     </div>
                     <div class="col-md-3" >
-                        <button id="addMore" class="fa fa-plus btn blue">More</button><button id="removeDiv" class="fa fa-minus btn red">Less</button>
+                        <button id="addMore" class="fa fa-plus btn-primary btn">More</button><button id="removeDiv" class="fa fa-minus btn btn-warning">Less</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <div>
-    @if (session('status'))
-        <div style="width: 20%;" class="alert alert-warning">
-            {{ session('status') }}
-        </div>
-    @endif
         <form method="post" action="{{route('purchase')}}" role="form">
             {{ csrf_field() }}
              <div class="form-group row">
@@ -123,15 +139,44 @@
 
 @endsection
 
+@section('js_content')
+
 <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> -->
+
 <script src="{{asset('assets/datepicker/js/bootstrap-datepicker.min.js')}}"></script>
 
 <link rel="stylesheet" href="{{asset('assets/datepicker/css/bootstrap-datepicker.min.css')}}" />
 
 <script>
+
+    function getItems(category,t)
+    {
+        var CSRF_TOKEN = "{{ csrf_token() }}";
+        $.ajax({
+          type: "POST",
+          url: "{{route('item_by_category')}}",
+          data: {category:category,_token: CSRF_TOKEN},
+          cache: false,
+          success: function(data){
+                 var data = JSON.parse(data);
+                 var items = data.items;
+                 var itemOption = '';
+                 var id,item;
+                 for (var i = 0; i <items.length; i++) {
+                     id = items[i]['id'];
+                     item = items[i]['name'];
+
+                     itemOption+='<option value="'+id+'">'+item+' </option>'
+                 }
+                 $("#product_name_"+t).html(itemOption);
+            }
+
+        });
+    }
+
     $(function() {
     var divId = 0; 
     $("#addMore").click(function(e) {
@@ -141,7 +186,8 @@
         var items = '';
         items+='<div class="newDiv_' + divId +'">';
         items+='<h3><u>Another Product</u></h3>';
-        items+='<div class="form-group row"><label class="col-sm-2 col-form-label">Product Name</label><div class="col-sm-10"><input type="text" name="product_name[]" class="form-control" placeholder="Product Name"></div></div>';
+        /*items+='<div class="form-group row"><label class="col-sm-2 col-form-label">Product Name</label><div class="col-sm-10"><input type="text" name="product_name[]" class="form-control" placeholder="Product Name"></div></div>';*/
+        items+='<div class="form-group row"><label class="col-md-2">Category</label><div class="col-md-4"><select name="category" onchange="getItems(this.value,' + divId +')" id="category" class="form-control"><option disabled selected>Select</option>@foreach($list as $item)<option value="{{$item->id}}"> {{$item->name}} </option>@endforeach</select></div><label class="col-md-2 col-sm-2 col-form-label">Product Name</label><div class="col-md-4"><select id="product_name_' + divId +'" name="product_name[]" class="form-control"><option>Select One </option></select></div></div>';
         items+='<div class="form-group row"><label class="col-sm-2 col-form-label">Brand</label><div class="col-sm-10"><input type="text" name="brand[]" class="form-control" placeholder="Brand"></div></div>';
         items+='<div class="form-group row"><label class="col-sm-2 col-form-label">Purchase From</label><div class="col-sm-10"><input type="text" name="purchase_from[]" class="form-control" placeholder="Purchase From"></div></div>';
         items+='<div class="form-group row"><label class="col-sm-2 col-form-label"> Quantity</label><div class="col-sm-10"><input type="text" onchange="calUnitMore('+divId+')" name="quantity[]" id="quantity_' + divId +'" class="form-control" placeholder="Quantity"></div></div>';
@@ -166,8 +212,6 @@
         }
        
     }); 
-
-
 
 });
     function TotalAmount()
@@ -246,3 +290,5 @@ function Amount()
         
     }
 </script>
+
+@endsection

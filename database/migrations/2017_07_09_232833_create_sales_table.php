@@ -21,6 +21,8 @@ class CreateSalesTable extends Migration
             $table->float('quantity');
             $table->float('amount');
             $table->float('total');
+            $table->float('less');
+            $table->float('due');
             $table->string('shop');
             $table->timestamps();
         });
